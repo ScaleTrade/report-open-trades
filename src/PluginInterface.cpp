@@ -21,12 +21,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
                              rapidjson::Value& response,
                              rapidjson::Document::AllocatorType& allocator,
                              CServerInterface* server) {
-    // Структура накопления итогов
-    struct Total {
-        double volume;
-    };
-
-    std::unordered_map<std::string, Total> totals_map;
+    double total_volume;
 
     std::string group_mask;
     int from;
@@ -56,9 +51,101 @@ extern "C" void CreateReport(rapidjson::Value& request,
         return oss.str();
     };
 
+    auto create_table = [&](const std::vector<TradeRecord>& trades) -> Node {
+        std::vector<Node> thead_rows;
+        std::vector<Node> tbody_rows;
+        std::vector<Node> tfoot_rows;
+
+        // Thead
+        thead_rows.push_back(tr({
+            th({div({text("Order")})}),
+            th({div({text("Login")})}),
+            th({div({text("Name")})}),
+            th({div({text("Open Time")})}),
+            th({div({text("Type")})}),
+            th({div({text("Symbol")})}),
+            th({div({text("Volume")})}),
+            th({div({text("Price")})}),
+            th({div({text("S / L")})}),
+            th({div({text("T / P")})}),
+            th({div({text("Commission")})}),
+            th({div({text("Swap")})}),
+            th({div({text("Profit")})}),
+            th({div({text("Comment")})}),
+        }));
+
+        // Tbody
+        for (const auto& trade : trades_vector) {
+            AccountRecord account;
+
+            server->GetAccountByLogin(trade.login, &account);
+
+            total_volume += trade.volume;
+
+            tbody_rows.push_back(tr({
+                td({div({text(std::to_string(trade.order))})}),
+                td({div({text(std::to_string(trade.login))})}),
+                td({div({text(account.name)})}),
+                td({div({text(utils::FormatTimestampToString(trade.close_time))})}),
+                td({div({text(trade.cmd == 0 ? "buy" : "sell")})}),
+                td({div({text(trade.symbol)})}),
+                td({div({text(std::to_string(trade.volume))})}),
+                td({div({text(std::to_string(trade.close_price))})}),
+                td({div({text(std::to_string(trade.sl))})}),
+                td({div({text(std::to_string(trade.tp))})}),
+                td({div({text(std::to_string(trade.commission))})}),
+                td({div({text(std::to_string(trade.storage))})}),
+                td({div({text(format_for_AST(trade.profit))})}),
+                td({div({text(trade.comment)})}),
+            }));
+        }
+
+        // Tfoot
+        tfoot_rows.push_back(tr({
+            td({div({text("TOTAL:")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})})
+        }));
+
+        tfoot_rows.push_back(tr({
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text(std::to_string(total_volume))})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+        }));
+
+        return table({
+            thead(thead_rows),
+            tbody(tbody_rows),
+            tfoot(tfoot_rows),
+        }, props({{"className", "table"}}));
+    };
+
     // Total report
     const Node report = div({
         h1({text("Open Trades Report")}),
+        create_table(trades_vector)
     });
 
     utils::CreateUI(report, response, allocator);
