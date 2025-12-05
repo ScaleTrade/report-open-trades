@@ -6,6 +6,7 @@
 #include "Structures.hpp"
 #include <rapidjson/document.h>
 #include "ast/Ast.hpp"
+#include "sbxTableBuilder/SBXTableBuilder.hpp"
 #include "Utils.hpp"
 
 using namespace ast;

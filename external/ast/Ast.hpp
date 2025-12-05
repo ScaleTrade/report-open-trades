@@ -175,6 +175,8 @@ namespace ast {
     TAG_WITH_TYPE(PolarAngleAxis, "Recharts.PolarAngleAxis")
     TAG_WITH_TYPE(PolarRadiusAxis, "Recharts.PolarRadiusAxis")
 
+    // ---------- Custom components ----------
+    TAG(Table)
 
     // ---------- Props helper ----------
 
