@@ -173,21 +173,6 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
         total_volume += trade.volume;
 
-        // tbody_rows.push_back(tr({
-        //     td({div({text(std::to_string(trade.order))})}),
-        //     td({div({text(std::to_string(trade.login))})}),
-        //     td({div({text(account.name)})}),
-        //     td({div({text(utils::FormatTimestampToString(trade.open_time))})}),
-        //     td({div({text(trade.cmd == 0 ? "buy" : "sell")})}),
-        //     td({div({text(trade.symbol)})}),
-        //     td({div({text(format_double_for_AST(trade.volume))})}),
-        //     td({div({text(format_double_for_AST(trade.open_price))})}),
-        //     td({div({text(std::to_string(trade.sl))})}),
-        //     td({div({text(std::to_string(trade.tp))})}),
-        //     td({div({text(std::to_string(trade.storage))})}),
-        //     td({div({text(format_double_for_AST(trade.profit))})}),
-        //     td({div({text(trade.comment)})}),
-        // }));
         table_builder.AddRow({
             {"order", std::to_string(trade.order)},
             {"login", std::to_string(trade.login)},
