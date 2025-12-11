@@ -1,16 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
-project(OpenTradesReport)
+project(OpenTradesReports)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(OpenTradesReport SHARED
+file(GLOB_RECURSE UTILS_SOURCE      src/utils/*.cpp)
+file(GLOB_RECURSE STRUCTURES_SOURCE src/structures/*.cpp)
+
+set(SOURCES
         src/PluginInterface.cpp
-        src/Utils.cpp
+        ${UTILS_SOURCE}
+        ${STRUCTURES_SOURCE}
 )
 
-target_include_directories(OpenTradesReport PRIVATE
+add_library(OpenTradesReports SHARED ${SOURCES})
+
+target_include_directories(OpenTradesReports PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/api
         ${CMAKE_SOURCE_DIR}/external
+        ${CMAKE_SOURCE_DIR}/src
 )
