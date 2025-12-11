@@ -85,6 +85,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
     table_builder.AddColumn({"storage", "SWAP"});
     table_builder.AddColumn({"profit", "AMOUNT"});
     table_builder.AddColumn({"comment", "COMMENT"});
+    table_builder.AddColumn({"currency", "CURRENCY"});
 
     for (const auto& trade : trades_vector) {
         AccountRecord account;
