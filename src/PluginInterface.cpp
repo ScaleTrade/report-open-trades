@@ -45,23 +45,6 @@ extern "C" void CreateReport(rapidjson::Value& request,
         std::cerr << "[OpenTradesReportInterface]: " << e.what() << std::endl;
     }
 
-    // Лямбда для поиска валюты аккаунта по группе
-    auto get_group_currency = [&](const std::string& group_name) -> std::string {
-        for (const auto& group : groups_vector) {
-            if (group.group == group_name) {
-                return group.currency;
-            }
-        }
-        return "N/A"; // группа не найдена - валюта не определена
-    };
-
-    // Лямбда подготавливающая значения double для вставки в AST (округление до 2-х знаков)
-    auto format_double_for_AST = [](double value) -> std::string {
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(2) << value;
-        return oss.str();
-    };
-
     TableBuilder table_builder("OpenTradesReportTable");
 
     table_builder.SetIdColumn("order");
@@ -72,20 +55,20 @@ extern "C" void CreateReport(rapidjson::Value& request,
     table_builder.EnableTotal(true);
     table_builder.SetTotalDataTitle("TOTAL");
 
-    table_builder.AddColumn({"order", "ORDER"});
-    table_builder.AddColumn({"login", "LOGIN"});
-    table_builder.AddColumn({"name", "NAME"});
-    table_builder.AddColumn({"open_time", "OPEN_TIME"});
-    table_builder.AddColumn({"type", "TYPE"});
-    table_builder.AddColumn({"symbol", "SYMBOL"});
-    table_builder.AddColumn({"volume", "VOLUME"});
-    table_builder.AddColumn({"open_price", "OPEN_PRICE"});
-    table_builder.AddColumn({"sl", "S / L"});
-    table_builder.AddColumn({"tp", "T / P"});
-    table_builder.AddColumn({"storage", "SWAP"});
-    table_builder.AddColumn({"profit", "AMOUNT"});
-    table_builder.AddColumn({"comment", "COMMENT"});
-    table_builder.AddColumn({"currency", "CURRENCY"});
+    table_builder.AddColumn({"order", "ORDER", 1});
+    table_builder.AddColumn({"login", "LOGIN", 2});
+    table_builder.AddColumn({"name", "NAME", 3});
+    table_builder.AddColumn({"open_time", "OPEN_TIME", 4});
+    table_builder.AddColumn({"type", "TYPE", 5});
+    table_builder.AddColumn({"symbol", "SYMBOL", 6});
+    table_builder.AddColumn({"volume", "VOLUME", 7});
+    table_builder.AddColumn({"open_price", "OPEN_PRICE", 8});
+    table_builder.AddColumn({"sl", "S / L", 9});
+    table_builder.AddColumn({"tp", "T / P", 10});
+    table_builder.AddColumn({"storage", "SWAP", 11});
+    table_builder.AddColumn({"profit", "AMOUNT", 12});
+    table_builder.AddColumn({"comment", "COMMENT", 13});
+    table_builder.AddColumn({"currency", "CURRENCY", 14});
 
     for (const auto& trade : trades_vector) {
         AccountRecord account;
@@ -98,22 +81,22 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
         total_volume += trade.volume;
 
-        const std::string currency = get_group_currency(account.group);
+        const std::string currency = utils::GetGroupCurrencyByName(groups_vector, account.group);
         double multiplier = 1;
 
         table_builder.AddRow({
-            {"order", std::to_string(trade.order)},
-            {"login", std::to_string(trade.login)},
+            {"order", utils::TruncateDouble(trade.order, 0)},
+            {"login", utils::TruncateDouble(trade.login, 0)},
             {"name", account.name},
             {"open_time", utils::FormatTimestampToString(trade.open_time)},
             {"type", trade.cmd == 0 ? "buy" : "sell"},
             {"symbol", trade.symbol},
-            {"volume", format_double_for_AST(trade.volume)},
-            {"open_price", format_double_for_AST(trade.open_price * multiplier)},
-            {"sl", std::to_string(trade.sl * multiplier)},
-            {"tp", std::to_string(trade.tp * multiplier)},
-            {"storage", std::to_string(trade.storage * multiplier)},
-            {"profit", format_double_for_AST(trade.profit * multiplier)},
+            {"volume", utils::TruncateDouble(trade.volume, 0)},
+            {"open_price", utils::TruncateDouble(trade.open_price * multiplier, 2)},
+            {"sl", utils::TruncateDouble(trade.sl * multiplier, 2)},
+            {"tp", utils::TruncateDouble(trade.tp * multiplier, 2)},
+            {"storage", utils::TruncateDouble(trade.storage * multiplier, 2)},
+            {"profit", utils::TruncateDouble(trade.profit * multiplier, 2)},
             {"comment", trade.comment},
             {"currency", "USD"}
         });
