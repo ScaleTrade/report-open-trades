@@ -3,7 +3,7 @@
 #include <cmath>
 #include <ctime>
 #include <iomanip>
-#include "Structures.hpp"
+#include "Structures.h"
 #include <sstream>
 #include "ast/Ast.hpp"
 #include <rapidjson/document.h>
