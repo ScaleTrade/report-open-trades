@@ -4,7 +4,7 @@ project(OpenTradesReport)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE UTILS_SOURCE      src/utils/*.cpp)
+file(GLOB_RECURSE UTILS_SOURCE src/utils/*.cpp)
 file(GLOB_RECURSE STRUCTURES_SOURCE src/structures/*.cpp)
 
 set(SOURCES

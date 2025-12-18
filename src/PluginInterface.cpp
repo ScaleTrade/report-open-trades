@@ -49,6 +49,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
     table_builder.SetIdColumn("order");
     table_builder.SetOrderBy("order", "DESC");
+    table_builder.EnableAutoSave(false);
     table_builder.EnableRefreshButton(false);
     table_builder.EnableBookmarksButton(false);
     table_builder.EnableExportButton(true);
@@ -85,20 +86,20 @@ extern "C" void CreateReport(rapidjson::Value& request,
         double multiplier = 1;
 
         table_builder.AddRow({
-            {"order", utils::TruncateDouble(trade.order, 0)},
-            {"login", utils::TruncateDouble(trade.login, 0)},
-            {"name", account.name},
-            {"open_time", utils::FormatTimestampToString(trade.open_time)},
-            {"type", trade.cmd == 0 ? "buy" : "sell"},
-            {"symbol", trade.symbol},
-            {"volume", utils::TruncateDouble(trade.volume, 0)},
-            {"open_price", utils::TruncateDouble(trade.open_price * multiplier, 2)},
-            {"sl", utils::TruncateDouble(trade.sl * multiplier, 2)},
-            {"tp", utils::TruncateDouble(trade.tp * multiplier, 2)},
-            {"storage", utils::TruncateDouble(trade.storage * multiplier, 2)},
-            {"profit", utils::TruncateDouble(trade.profit * multiplier, 2)},
-            {"comment", trade.comment},
-            {"currency", "USD"}
+            utils::TruncateDouble(trade.order, 0),
+            utils::TruncateDouble(trade.login, 0),
+            account.name,
+            utils::FormatTimestampToString(trade.open_time),
+            trade.cmd == 0 ? "buy" : "sell",
+            trade.symbol,
+            utils::TruncateDouble(trade.volume, 0),
+            utils::TruncateDouble(trade.open_price * multiplier, 2),
+            utils::TruncateDouble(trade.sl * multiplier, 2),
+            utils::TruncateDouble(trade.tp * multiplier, 2),
+            utils::TruncateDouble(trade.storage * multiplier, 2),
+            utils::TruncateDouble(trade.profit * multiplier, 2),
+            trade.comment,
+            "USD"
         });
     }
 
