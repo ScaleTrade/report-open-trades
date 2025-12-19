@@ -103,12 +103,10 @@ extern "C" void CreateReport(rapidjson::Value& request,
         });
     }
 
-    std::cout << "VOLUME: " << total_volume << std::endl;
-
     // Total row
     JSONArray totals_array;
     totals_array.emplace_back(JSONObject{
-        {"volume", utils::TruncateDouble(total_volume, 0)}
+        {"volume", 0.00}
     });
 
     table_builder.SetTotalData(totals_array);
