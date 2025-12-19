@@ -34,7 +34,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
         to = request["to"].GetInt();
     }
 
-    double total_volume;
+    double total_volume = 0;
     std::vector<TradeRecord> trades_vector;
     std::vector<GroupRecord> groups_vector;
 
