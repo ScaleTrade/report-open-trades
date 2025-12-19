@@ -103,6 +103,8 @@ extern "C" void CreateReport(rapidjson::Value& request,
         });
     }
 
+    std::cout << "VOLUME: " << total_volume << std::endl;
+
     // Total row
     JSONArray totals_array;
     totals_array.emplace_back(JSONObject{
