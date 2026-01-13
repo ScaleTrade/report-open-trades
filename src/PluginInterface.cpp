@@ -45,8 +45,10 @@ extern "C" void CreateReport(rapidjson::Value& request,
         std::cerr << "[OpenTradesReportInterface]: " << e.what() << std::endl;
     }
 
+    // Main table
     TableBuilder table_builder("OpenTradesReportTable");
 
+    // Table props
     table_builder.SetIdColumn("order");
     table_builder.SetOrderBy("order", "DESC");
     table_builder.EnableAutoSave(false);
@@ -56,20 +58,28 @@ extern "C" void CreateReport(rapidjson::Value& request,
     table_builder.EnableTotal(true);
     table_builder.SetTotalDataTitle("TOTAL");
 
-    table_builder.AddColumn({"order", "ORDER", 1});
-    table_builder.AddColumn({"login", "LOGIN", 2});
-    table_builder.AddColumn({"name", "NAME", 3});
-    table_builder.AddColumn({"open_time", "OPEN_TIME", 4});
+    // Filters
+    FilterConfig search_filter;
+    search_filter.type = FilterType::Search;
+
+    FilterConfig date_time_filter;
+    date_time_filter.type = FilterType::DateTime;
+
+    // Columns
+    table_builder.AddColumn({"order", "ORDER", 1, search_filter});
+    table_builder.AddColumn({"login", "LOGIN", 2, search_filter});
+    table_builder.AddColumn({"name", "NAME", 3, search_filter});
+    table_builder.AddColumn({"open_time", "OPEN_TIME", 4, date_time_filter});
     table_builder.AddColumn({"type", "TYPE", 5});
-    table_builder.AddColumn({"symbol", "SYMBOL", 6});
-    table_builder.AddColumn({"volume", "VOLUME", 7});
-    table_builder.AddColumn({"open_price", "OPEN_PRICE", 8});
-    table_builder.AddColumn({"sl", "S / L", 9});
-    table_builder.AddColumn({"tp", "T / P", 10});
-    table_builder.AddColumn({"storage", "SWAP", 11});
-    table_builder.AddColumn({"profit", "AMOUNT", 12});
-    table_builder.AddColumn({"comment", "COMMENT", 13});
-    table_builder.AddColumn({"currency", "CURRENCY", 14});
+    table_builder.AddColumn({"symbol", "SYMBOL", 6, search_filter});
+    table_builder.AddColumn({"volume", "VOLUME", 7, search_filter});
+    table_builder.AddColumn({"open_price", "OPEN_PRICE", 8, search_filter});
+    table_builder.AddColumn({"sl", "S / L", 9, search_filter});
+    table_builder.AddColumn({"tp", "T / P", 10, search_filter});
+    table_builder.AddColumn({"storage", "SWAP", 11, search_filter});
+    table_builder.AddColumn({"profit", "AMOUNT", 12, search_filter});
+    table_builder.AddColumn({"comment", "COMMENT", 13, search_filter});
+    table_builder.AddColumn({"currency", "CURRENCY", 14, search_filter});
 
     for (const auto& trade : trades_vector) {
         AccountRecord account;

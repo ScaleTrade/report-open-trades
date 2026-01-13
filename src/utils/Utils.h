@@ -15,7 +15,8 @@ namespace utils {
               rapidjson::Value& response,
               rapidjson::Document::AllocatorType& allocator);
 
-    std::string FormatTimestampToString(const time_t& timestamp);
+    std::string FormatTimestampToString(const time_t&      timestamp,
+                                        const std::string& format = "%Y.%m.%d %H:%M:%S");
 
     double TruncateDouble(const double& value, const int& digits);
 
