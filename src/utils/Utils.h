@@ -21,4 +21,6 @@ namespace utils {
     double TruncateDouble(const double& value, const int& digits);
 
     std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector, const std::string& group_name);
+
+    std::string ConvertCmdToString(const int cmd);
 }
