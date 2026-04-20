@@ -108,8 +108,8 @@ namespace utils {
         return std::trunc(value * factor) / factor;
     }
 
-    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector,
-                                       const std::string&              group_name) {
+    std::string GetGroupCurrencyByName(const std::vector<ReportGroupRecord>& group_vector,
+                                       const std::string&                    group_name) {
         for (const auto& group : group_vector) {
             if (group.group == group_name) {
                 return group.currency;
