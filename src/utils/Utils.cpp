@@ -1,8 +1,8 @@
 #include "Utils.h"
 
 namespace utils {
-    void CreateUI(const ast::Node& node,
-                  rapidjson::Value& response,
+    void CreateUI(const ast::Node&                    node,
+                  rapidjson::Value&                   response,
                   rapidjson::Document::AllocatorType& allocator) {
         // Content
         Value node_object(kObjectType);
@@ -79,14 +79,12 @@ namespace utils {
             footer_array.PushBack(space_object, allocator);
         }
 
-
         // Modal
         Value model_object(kObjectType);
         model_object.AddMember("size", "xxxl", allocator);
         model_object.AddMember("headerContent", header_array, allocator);
         model_object.AddMember("footerContent", footer_array, allocator);
         model_object.AddMember("content", content_array, allocator);
-
 
         // UI
         Value ui_object(kObjectType);
@@ -110,13 +108,14 @@ namespace utils {
         return std::trunc(value * factor) / factor;
     }
 
-    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector, const std::string& group_name) {
+    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector,
+                                       const std::string&              group_name) {
         for (const auto& group : group_vector) {
             if (group.group == group_name) {
                 return group.currency;
             }
         }
-        return "N/A";   // группа не найдена - валюта не определена
+        return "N/A"; // группа не найдена - валюта не определена
     }
 
     std::string ConvertCmdToString(const int cmd) {
@@ -151,4 +150,4 @@ namespace utils {
                 return "Unknown";
         }
     }
-}
+} // namespace utils
