@@ -28,6 +28,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
     std::string group_mask;
     int         from;
     int         to;
+
     if (request.HasMember("group") && request["group"].IsString()) {
         group_mask = request["group"].GetString();
     }
@@ -38,9 +39,10 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
         to = request["to"].GetInt();
     }
 
-    double                         total_volume = 0;
-    std::vector<ReportTradeRecord> trades_vector;
-    std::vector<ReportGroupRecord> groups_vector;
+    double                                  total_volume = 0;
+    std::unordered_map<std::string, double> total_map;
+    std::vector<ReportTradeRecord>          trades_vector;
+    std::vector<ReportGroupRecord>          groups_vector;
 
     try {
         server->GetOpenTradesByGroup(group_mask, from, to, &trades_vector);
@@ -84,7 +86,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
     table_builder.AddColumn({"profit", "AMOUNT", 12, search_filter});
     table_builder.AddColumn({"comment", "COMMENT", 13, search_filter});
     table_builder.AddColumn({"currency", "CURRENCY", 14, search_filter});
-    table_builder.AddColumn({"group", "GROUP", 14, search_filter});
+    table_builder.AddColumn({"group", "GROUP", 15, search_filter});
 
     for (const auto& trade : trades_vector) {
         ReportAccountRecord account;
@@ -94,11 +96,10 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
         } catch (const std::exception& e) {
             std::cerr << "[OpenTradesReportInterface]: " << e.what() << std::endl;
         }
-
-        total_volume += trade.volume;
-
         const std::string currency   = utils::GetGroupCurrencyByName(groups_vector, account.group);
         double            multiplier = 1;
+
+        total_map[currency] += trade.volume;
 
         table_builder.AddRow({utils::TruncateDouble(trade.order, 0),
                               utils::TruncateDouble(trade.login, 0),
@@ -113,14 +114,16 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                               utils::TruncateDouble(trade.storage * multiplier, 2),
                               utils::TruncateDouble(trade.profit * multiplier, 2),
                               trade.comment,
-                              "USD",
+                              currency,
                               account.group});
     }
 
     // Total row
     JSONArray totals_array;
-    totals_array.emplace_back(
-        JSONObject{{"volume", utils::TruncateDouble(total_volume / 100.0, 2)}});
+    for (const auto& [currency, total_volume] : total_map) {
+        totals_array.emplace_back(JSONObject{
+            {"volume", utils::TruncateDouble(total_volume / 100.0, 2)}, {"currency", currency}});
+    }
 
     table_builder.SetTotalData(totals_array);
 

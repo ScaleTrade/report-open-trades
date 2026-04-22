@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <unordered_map>
 
 #include "ReportServerInterface.h"
 #include "rapidjson/document.h"
