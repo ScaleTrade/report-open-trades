@@ -84,6 +84,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
     table_builder.AddColumn({"profit", "AMOUNT", 12, search_filter});
     table_builder.AddColumn({"comment", "COMMENT", 13, search_filter});
     table_builder.AddColumn({"currency", "CURRENCY", 14, search_filter});
+    table_builder.AddColumn({"group", "GROUP", 14, search_filter});
 
     for (const auto& trade : trades_vector) {
         ReportAccountRecord account;
@@ -112,7 +113,8 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                               utils::TruncateDouble(trade.storage * multiplier, 2),
                               utils::TruncateDouble(trade.profit * multiplier, 2),
                               trade.comment,
-                              "USD"});
+                              "USD",
+                              account.group});
     }
 
     // Total row
