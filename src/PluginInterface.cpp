@@ -27,19 +27,37 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                              rapidjson::Value&                   response,
                              rapidjson::Document::AllocatorType& allocator,
                              ReportServerInterface*              server) {
-    std::string group_mask;
-    int         from;
-    int         to;
+    // Validation
+    constexpr ReportType   report_type = ReportType::RangeGroup;
+    const ValidationResult validation_result =
+        RequestValidator::ValidateRequest(report_type, request, server);
 
-    if (request.HasMember("group") && request["group"].IsString()) {
-        group_mask = request["group"].GetString();
+    if (!validation_result.allowed) {
+        std::cerr << "[DepositWithdrawalReportInterface]: " << validation_result.code
+                  << ", message: " << validation_result.message << std::endl;
+
+        const Node report =
+            div({h1({text("Access Denied")},
+                    props({{"style", JSONValue(JSONObject{{"color", JSONValue("#dc2626")}})}})),
+                 h2({text("Code: " + std::to_string(validation_result.code))}),
+                 h2({text(validation_result.message)},
+                    props({{"style", JSONValue(JSONObject{{"color", JSONValue("gray")}})}}))});
+
+        utils::CreateUI(report, response, allocator);
+
+        return;
     }
-    if (request.HasMember("from") && request["from"].IsNumber()) {
-        from = request["from"].GetInt();
-    }
-    if (request.HasMember("to") && request["to"].IsNumber()) {
-        to = request["to"].GetInt();
-    }
+
+    std::cout << "[DepositWithdrawalReportInterface]: " << validation_result.code
+              << ", message: " << validation_result.message << std::endl;
+
+    // Execution
+    std::string requested_group_mask = request["group"].GetString();
+    int         from                 = request["from"].GetInt();
+    int         to                   = request["to"].GetInt();
+    std::string allowed_group_mask   = request["__access"]["groups"].GetString();
+    std::string group_mask =
+        requested_group_mask == "*" ? allowed_group_mask : requested_group_mask;
 
     double                                  total_volume = 0;
     std::unordered_map<std::string, double> total_map;
